@@ -15,6 +15,12 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# GitHub Actions'tan gelen argümanı içeri al
+ARG VITE_API_BASE_URL
+
+# Vite'ın okuyabilmesi için onu Environment Variable'a çevir
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+
 # Build the application
 RUN npm run build
 
