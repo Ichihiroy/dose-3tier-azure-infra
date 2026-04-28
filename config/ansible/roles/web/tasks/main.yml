@@ -1,0 +1,27 @@
+---
+- name: Log in to Docker Hub
+  community.docker.docker_login:
+    username: "{{ dockerhub_username }}"
+    password: "{{ dockerhub_password }}"
+
+- name: Pull frontend image
+  community.docker.docker_image:
+    name: "{{ docker_image }}:{{ docker_tag }}"
+    source: pull
+    force_source: true
+
+- name: Stop and remove old container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    state: absent
+
+- name: Run frontend container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ docker_image }}:{{ docker_tag }}"
+    state: started
+    restart_policy: always
+    ports:
+      - "{{ app_port }}:{{ container_port }}"
+    env:
+      VITE_API_BASE_URL: "{{ vite_api_base_url }}"

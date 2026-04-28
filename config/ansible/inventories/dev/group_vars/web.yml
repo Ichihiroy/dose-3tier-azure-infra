@@ -1,0 +1,6 @@
+docker_image: "{{ dockerhub_username }}/senin-frontend-imajin"
+docker_tag: "latest"
+container_name: "burger-web"
+container_port: 80
+app_port: 80
+vite_api_base_url: "http://{{ hostvars['vm-api']['ansible_host'] }}:8080"

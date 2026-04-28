@@ -1,0 +1,6 @@
+docker_image: "{{ dockerhub_username }}/senin-backend-imajin"
+docker_tag: "latest"
+container_name: "burger-api"
+container_port: 8080
+app_port: 8080
+spring_profile: "azure"

@@ -43,3 +43,8 @@ output "vm_ops_private_ip" {
   description = "Ops VM private IP address."
   value       = module.ops.vm_ops_private_ip
 }
+
+output "vm_ops_public_ip" {
+  description = "Ops VM public IP — SSH target for admin access."
+  value       = module.ops.vm_ops_public_ip
+}

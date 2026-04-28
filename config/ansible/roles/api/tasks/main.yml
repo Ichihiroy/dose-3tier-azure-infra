@@ -1,0 +1,35 @@
+---
+- name: Log in to Docker Hub
+  community.docker.docker_login:
+    username: "{{ dockerhub_username }}"
+    password: "{{ dockerhub_password }}"
+
+- name: Pull backend image
+  community.docker.docker_image:
+    name: "{{ docker_image }}:{{ docker_tag }}"
+    source: pull
+    force_source: true
+
+- name: Stop and remove old container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    state: absent
+
+- name: Run backend container
+  community.docker.docker_container:
+    name: "{{ container_name }}"
+    image: "{{ docker_image }}:{{ docker_tag }}"
+    state: started
+    restart_policy: always
+    ports:
+      - "{{ app_port }}:{{ container_port }}"
+    env:
+      SPRING_PROFILES_ACTIVE: "{{ spring_profile }}"
+      DB_HOST: "{{ db_host }}"
+      DB_PORT: "1433"
+      DB_NAME: "{{ db_name }}"
+      DB_USERNAME: "{{ db_username }}"
+      DB_PASSWORD: "{{ db_password }}"
+      DB_DRIVER: "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+      CORS_ALLOWED_ORIGINS: "http://{{ hostvars['vm-web']['ansible_host'] }}"
+      SERVER_PORT: "8080"

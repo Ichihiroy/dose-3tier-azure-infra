@@ -27,3 +27,13 @@ yarn-error.log*
 **/**/*.tfstate
 **/**/target/
 
+# Ansible — vault file must be encrypted before committing; plain version never committed
+config/ansible/inventories/**/group_vars/all/vault.yml
+
+# Terraform sensitive outputs and plans
+infra/terraform/plan.out
+infra/terraform/envs/*.tfvars
+
+# Local env files with real credentials
+environment.env
+

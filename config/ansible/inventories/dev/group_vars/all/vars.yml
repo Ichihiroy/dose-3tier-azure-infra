@@ -1,0 +1,10 @@
+ansible_password: "{{ vault_vm_password }}"
+ansible_become_pass: "{{ vault_vm_password }}"
+
+dockerhub_username: "{{ vault_dockerhub_username }}"
+dockerhub_password: "{{ vault_dockerhub_password }}"
+
+db_host: "{{ vault_db_host }}"
+db_name: "{{ vault_db_name }}"
+db_username: "{{ vault_db_username }}"
+db_password: "{{ vault_db_password }}"
