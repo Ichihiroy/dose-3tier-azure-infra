@@ -1,4 +1,4 @@
-# 🍔 Burger Builder - Frontend
+# 🍔 Burger Builder - Frontend ..
 
 A modern, responsive burger ordering application built with React, TypeScript, and Vite.
 
@@ -61,17 +61,20 @@ frontend/
 ### Installation
 
 1. Install dependencies:
+
 ```bash
 npm install
 ```
 
 2. Create environment variables:
-Create a `.env` file in the root directory (copy from `.env.example`):
+   Create a `.env` file in the root directory (copy from `.env.example`):
+
 ```
 VITE_API_BASE_URL=http://localhost:8080
 ```
 
 3. Start the development server:
+
 ```bash
 npm run dev
 ```
@@ -130,36 +133,45 @@ npm run test:coverage
 The frontend expects a backend API with the following endpoints:
 
 ### Ingredients
+
 - `GET /api/ingredients` - Get all ingredients
 - `GET /api/ingredients/{category}` - Get ingredients by category
 
 ### Cart
+
 - `POST /api/cart/items` - Add item to cart
 - `GET /api/cart/{sessionId}` - Get cart items
 - `DELETE /api/cart/items/{itemId}` - Remove cart item
 
 ### Orders
+
 - `POST /api/orders` - Create new order
 - `GET /api/orders/{orderId}` - Get order details
 
 ## Component Overview
 
 ### BurgerBuilder
+
 The main component for creating custom burgers. Features:
+
 - Categorized ingredient selection
 - Visual burger preview
 - Real-time price calculation
 - Add to cart functionality
 
 ### Cart
+
 Shopping cart management with:
+
 - Item quantity controls
 - Remove items
 - Price summary with tax
 - Checkout navigation
 
 ### OrderSummary
+
 Checkout page with:
+
 - Customer details form
 - Order review
 - Order confirmation
