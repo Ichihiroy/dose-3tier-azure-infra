@@ -32,20 +32,20 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Compile Backend
-        run: mvn compile -f backend/pom.xml
-        env:
-          JAVA_HOME: ${{ env.JAVA_HOME }}
+      - name: Cache SonarQube packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
 
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v2
+      - name: Build, Test and Analyze
+        working-directory: backend
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        with:
-          projectBaseDir: backend
+        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gp3-project2 -Dsonar.projectName='gp3-project2'
 
-      # KRİTİK EKLENTİ: Quality Gate. Kod standartların altındaysa pipeline burada patlar, bozuk kod deploy edilmez.
       - name: SonarQube Quality Gate Check
         uses: SonarSource/sonarqube-quality-gate-action@v1
         timeout-minutes: 5
