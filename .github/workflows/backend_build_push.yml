@@ -12,12 +12,13 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/senin-backend-imajin
+  DOCKER_IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/gp3
 
 jobs:
   # 1. AŞAMA: KOD KALİTESİ VE GÜVENLİK
   sonarqube-analysis:
     runs-on: self-hosted
+    environment: env
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -44,6 +45,7 @@ jobs:
   build-and-push-docker:
     needs: sonarqube-analysis
     runs-on: self-hosted
+    environment: env
     steps:
       # İYİLEŞTİRME: rm -rf yerine Git'in kendi güvenli temizlik aracını kullanıyoruz.
       - name: Clean Workspace Before Checkout
