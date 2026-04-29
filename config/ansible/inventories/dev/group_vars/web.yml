@@ -1,5 +1,4 @@
-docker_image: "{{ dockerhub_username }}/senin-frontend-imajin"
-docker_tag: "latest"
+docker_image: "{{ dockerhub_username }}/gp3-front"
 container_name: "burger-web"
 container_port: 80
 app_port: 80
