@@ -16,7 +16,7 @@ env:
 
 jobs:
   sonarqube-analysis:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: env
     steps:
       - name: Checkout Code
@@ -56,7 +56,7 @@ jobs:
 
   build-and-push-docker:
     needs: sonarqube-analysis
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: env
     steps:
       - name: Clean Workspace Before Checkout
@@ -92,19 +92,14 @@ jobs:
 
   deploy:
     needs: build-and-push-docker
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     environment: env
     steps:
-      - name: Deploy to vm-web via Ansible
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.VM_OPS_HOST }}
-          username: azureuser
-          password: ${{ secrets.VM_OPS_PASSWORD }}
-          script: |
-            echo "${{ secrets.ANSIBLE_VAULT_PASS }}" > /tmp/vp
-            cd /home/azureuser/GP3-PROJECT2 && git pull
-            cd config/ansible
-            ansible-playbook playbooks/site.yml --limit web --vault-password-file /tmp/vp
-            rm -f /tmp/vp
-            rm -f /tmp/vp
+      - name: Ansible run
+        run: |
+          echo "${{ secrets.ANSIBLE_VAULT_PASS }}" > /tmp/vp
+          cd /home/azureuser/GP3-PROJECT2 && git pull
+          cd config/ansible
+          ansible-playbook playbooks/site.yml --limit web --vault-password-file /tmp/vp
+          rm -f /tmp/vp
+          rm -f /tmp/vp
