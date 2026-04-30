@@ -14,7 +14,3 @@ variable "prefix" {
   type = string
 }
 
-variable "admin_source_cidr" {
-  description = "CIDR block allowed SSH into the ops NSG."
-  type        = string
-}

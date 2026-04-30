@@ -32,7 +32,6 @@ module "network" {
   location            = var.location
   tags                = local.tags
   prefix              = local.prefix
-  admin_source_cidr   = var.admin_source_cidr
 }
 
 # 2. Observability — Log Analytics + App Insights
