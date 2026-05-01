@@ -1,0 +1,30 @@
+.goal-filter {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.goal-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  color: var(--text-muted);
+  background: transparent;
+  transition: all var(--transition);
+}
+
+.goal-pill:hover {
+  border-color: var(--pill-color, var(--accent-cyan));
+  color: var(--pill-color, var(--accent-cyan));
+}
+
+.goal-pill.active {
+  border-color: var(--pill-color, var(--accent-cyan));
+  color: var(--pill-color, var(--accent-cyan));
+  background: rgba(0, 0, 0, 0.3);
+}

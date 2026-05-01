@@ -4,7 +4,34 @@ import { useCart } from '../../context/CartContext';
 import { getIngredients } from '../../services/api';
 import BurgerPreview from './BurgerPreview';
 import IngredientList from '../Ingredients/IngredientList';
+import GoalFilter from './GoalFilter';
+import StarterProtocols from './StarterProtocols';
+import MetricsPanel from './MetricsPanel';
+import type { Ingredient } from '../../types';
 import './BurgerBuilder.css';
+
+const SAMPLE_INGREDIENTS: Ingredient[] = [
+  { id: 1,  name: 'Ashwagandha',      category: 'energy',    price: 0.89, imageUrl: null },
+  { id: 2,  name: 'Rhodiola Rosea',   category: 'energy',    price: 1.20, imageUrl: null },
+  { id: 3,  name: 'CoQ10',            category: 'energy',    price: 1.50, imageUrl: null },
+  { id: 4,  name: 'B-Complex',        category: 'energy',    price: 0.75, imageUrl: null },
+  { id: 5,  name: 'Maca Root',        category: 'energy',    price: 0.95, imageUrl: null },
+  { id: 6,  name: "Lion's Mane",      category: 'focus',     price: 1.10, imageUrl: null },
+  { id: 7,  name: 'L-Theanine',       category: 'focus',     price: 0.65, imageUrl: null },
+  { id: 8,  name: 'Alpha-GPC',        category: 'focus',     price: 1.80, imageUrl: null },
+  { id: 9,  name: 'Bacopa Monnieri',  category: 'focus',     price: 0.90, imageUrl: null },
+  { id: 10, name: 'Phosphatidylserine', category: 'focus',   price: 1.40, imageUrl: null },
+  { id: 11, name: 'Vitamin C',        category: 'immunity',  price: 0.30, imageUrl: null },
+  { id: 12, name: 'Vitamin D3 + K2',  category: 'immunity',  price: 0.55, imageUrl: null },
+  { id: 13, name: 'Zinc Picolinate',  category: 'immunity',  price: 0.45, imageUrl: null },
+  { id: 14, name: 'Elderberry',       category: 'immunity',  price: 0.80, imageUrl: null },
+  { id: 15, name: 'Quercetin',        category: 'immunity',  price: 1.00, imageUrl: null },
+  { id: 16, name: 'NMN',             category: 'longevity', price: 2.50, imageUrl: null },
+  { id: 17, name: 'Omega-3',         category: 'longevity', price: 0.70, imageUrl: null },
+  { id: 18, name: 'Resveratrol',     category: 'longevity', price: 1.60, imageUrl: null },
+  { id: 19, name: 'Collagen Peptides', category: 'longevity', price: 1.20, imageUrl: null },
+  { id: 20, name: 'Magnesium Glycinate', category: 'longevity', price: 0.60, imageUrl: null },
+];
 
 const BurgerBuilder: React.FC = () => {
   const {
@@ -12,81 +39,57 @@ const BurgerBuilder: React.FC = () => {
     ingredients,
     setIngredients,
     addLayer,
-    removeLayer,
     clearLayers,
     getTotalPrice,
-    getIngredientById,
   } = useBurgerBuilder();
 
   const { addItemToCart } = useCart();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
+  const [selectedGoal, setSelectedGoal] = useState('all');
 
   useEffect(() => {
     loadIngredients();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadIngredients = async () => {
     try {
       setLoading(true);
       const data = await getIngredients();
-      // Handle both grouped format (legacy) and flat list format (current backend)
-      const allIngredients = Array.isArray(data) 
-        ? data 
-        : [
-            ...data.buns,
-            ...data.patties,
-            ...data.toppings,
-            ...data.sauces,
-          ];
+      const allIngredients = Array.isArray(data) ? data : [
+        ...data.buns, ...data.patties, ...data.toppings, ...data.sauces,
+      ];
       setIngredients(allIngredients);
-      setError(null);
-    } catch (err) {
-      setError('Failed to load ingredients. Using sample data for demo.');
-      // Set sample data for demo purposes
-      setSampleIngredients();
+    } catch {
+      setIngredients(SAMPLE_INGREDIENTS);
     } finally {
       setLoading(false);
     }
   };
 
-  const setSampleIngredients = () => {
-    const sampleIngredients = [
-      { id: 1, name: 'Sesame Bun', category: 'buns' as const, price: 1.5, imageUrl: '' },
-      { id: 2, name: 'Whole Wheat Bun', category: 'buns' as const, price: 1.8, imageUrl: '' },
-      { id: 3, name: 'Beef Patty', category: 'patties' as const, price: 3.5, imageUrl: '' },
-      { id: 4, name: 'Chicken Patty', category: 'patties' as const, price: 3.0, imageUrl: '' },
-      { id: 5, name: 'Veggie Patty', category: 'patties' as const, price: 2.8, imageUrl: '' },
-      { id: 6, name: 'Lettuce', category: 'toppings' as const, price: 0.5, imageUrl: '' },
-      { id: 7, name: 'Tomato', category: 'toppings' as const, price: 0.5, imageUrl: '' },
-      { id: 8, name: 'Onion', category: 'toppings' as const, price: 0.3, imageUrl: '' },
-      { id: 9, name: 'Cheese', category: 'toppings' as const, price: 1.0, imageUrl: '' },
-      { id: 10, name: 'Pickles', category: 'toppings' as const, price: 0.4, imageUrl: '' },
-      { id: 11, name: 'Ketchup', category: 'sauces' as const, price: 0.2, imageUrl: '' },
-      { id: 12, name: 'Mayo', category: 'sauces' as const, price: 0.2, imageUrl: '' },
-      { id: 13, name: 'Mustard', category: 'sauces' as const, price: 0.2, imageUrl: '' },
-      { id: 14, name: 'BBQ Sauce', category: 'sauces' as const, price: 0.3, imageUrl: '' },
-    ];
-    setIngredients(sampleIngredients);
+  const handleLoadPreset = (ids: number[]) => {
+    clearLayers();
+    ids.forEach(id => addLayer(id));
   };
 
-  const handleAddToCart = () => {
+  const handleAddToStack = (id: number) => {
+    addLayer(id);
+  };
+
+  const handleSubscribe = () => {
     if (layers.length === 0) {
-      showNotification('Please add some ingredients first!');
+      showNotification('Add supplements to your protocol first.');
       return;
     }
-
-    const cartItem = {
+    addItemToCart({
       id: Date.now(),
-      layers: layers,
+      layers,
       totalPrice: getTotalPrice(),
       quantity: 1,
-    };
-
-    addItemToCart(cartItem);
+    });
     clearLayers();
-    showNotification('Burger added to cart! 🎉');
+    showNotification('Protocol added to your stack.');
   };
 
   const showNotification = (message: string) => {
@@ -96,64 +99,60 @@ const BurgerBuilder: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner">🍔</div>
-        <p>Loading ingredients...</p>
+      <div className="bb-loading">
+        <span className="bb-loading-dot" />
+        <span className="bb-loading-dot" />
+        <span className="bb-loading-dot" />
       </div>
     );
   }
 
   return (
-    <div className="burger-builder">
-      {notification && (
-        <div className="notification">{notification}</div>
-      )}
-      
-      {error && (
-        <div className="error-banner">
-          ⚠️ {error}
-        </div>
-      )}
+    <div className="bb-root">
+      {notification && <div className="bb-toast">{notification}</div>}
 
-      <div className="builder-container">
-        <div className="builder-left">
-          <div className="builder-header">
-            <h1>Build Your Burger</h1>
-            <p>Select ingredients to create your perfect burger</p>
+      <div className="bb-layout">
+        {/* Left: catalog */}
+        <div className="bb-catalog">
+          <div className="bb-catalog-header">
+            <h1 className="bb-title">Protocol Studio</h1>
+            <p className="bb-subtitle">Build your personalized supplement stack</p>
           </div>
+          <GoalFilter selected={selectedGoal} onSelect={setSelectedGoal} />
           <IngredientList
             ingredients={ingredients}
-            onAddIngredient={addLayer}
+            selectedGoal={selectedGoal}
+            onAdd={handleAddToStack}
           />
         </div>
 
-        <div className="builder-right">
-          <BurgerPreview
-            layers={layers}
-            getIngredientById={getIngredientById}
-            onRemoveLayer={removeLayer}
-          />
-          
-          <div className="builder-actions">
-            <div className="price-display">
-              <span className="price-label">Total:</span>
-              <span className="price-value">${getTotalPrice().toFixed(2)}</span>
-            </div>
-            
-            <div className="action-buttons">
+        {/* Right: protocol panel */}
+        <div className="bb-panel">
+          <div className="bb-panel-sticky">
+            <StarterProtocols ingredients={ingredients} onLoad={handleLoadPreset} />
+            <BurgerPreview />
+            <MetricsPanel
+              layers={layers}
+              ingredients={ingredients}
+              totalPrice={getTotalPrice()}
+            />
+            <div className="bb-cta">
               <button
-                className="clear-button"
+                className="bb-subscribe-btn"
+                onClick={handleSubscribe}
+                disabled={layers.length === 0}
+              >
+                <span className="bb-subscribe-label">Subscribe</span>
+                <span className="bb-subscribe-price">
+                  ${getTotalPrice().toFixed(2)}<span className="bb-subscribe-freq">/mo</span>
+                </span>
+              </button>
+              <button
+                className="bb-clear-btn"
                 onClick={clearLayers}
                 disabled={layers.length === 0}
               >
-                Clear
-              </button>
-              <button
-                className="add-to-cart-button"
-                onClick={handleAddToCart}
-                disabled={layers.length === 0}
-              >
-                Add to Cart
+                Reset Protocol
               </button>
             </div>
           </div>
@@ -164,4 +163,3 @@ const BurgerBuilder: React.FC = () => {
 };
 
 export default BurgerBuilder;
-

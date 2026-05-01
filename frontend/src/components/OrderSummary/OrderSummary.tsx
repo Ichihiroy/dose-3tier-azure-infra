@@ -9,14 +9,14 @@ import './OrderSummary.css';
 const OrderSummary: React.FC = () => {
   const { cart, getTotalPrice, clearCart } = useCart();
   const navigate = useNavigate();
-  
+
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     name: '',
     email: '',
     phone: '',
     address: '',
   });
-  
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -24,106 +24,61 @@ const OrderSummary: React.FC = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setCustomerDetails((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setCustomerDetails((prev) => ({ ...prev, [name]: value }));
   };
 
   const validateForm = (): boolean => {
-    if (!customerDetails.name.trim()) {
-      setError('Please enter your name');
-      return false;
-    }
-    if (!customerDetails.email.trim() || !customerDetails.email.includes('@')) {
-      setError('Please enter a valid email');
-      return false;
-    }
-    if (!customerDetails.phone.trim()) {
-      setError('Please enter your phone number');
-      return false;
-    }
-    if (!customerDetails.address.trim()) {
-      setError('Please enter your address');
-      return false;
-    }
+    if (!customerDetails.name.trim()) { setError('Full name is required'); return false; }
+    if (!customerDetails.email.trim() || !customerDetails.email.includes('@')) { setError('Valid email is required'); return false; }
+    if (!customerDetails.phone.trim()) { setError('Phone number is required'); return false; }
+    if (!customerDetails.address.trim()) { setError('Shipping address is required'); return false; }
     return true;
   };
 
   const syncCartWithBackend = async (sessionId: string) => {
     try {
-      // Get current backend cart items
       const backendCartItems = await getCart(sessionId);
-      
-      // If backend cart is empty but local cart has items, add them to backend
       if (backendCartItems.length === 0 && cart.length > 0) {
         for (const cartItem of cart) {
-          // Add each layer as a separate cart item
-          for (let i = 0; i < cartItem.layers.length; i++) {
-            const layer = cartItem.layers[i];
-            await addToCart({
-              sessionId,
-              ingredientId: layer.ingredientId,
-              quantity: layer.quantity,
-            });
+          for (const layer of cartItem.layers) {
+            await addToCart({ sessionId, ingredientId: layer.ingredientId, quantity: layer.quantity });
           }
         }
       }
-    } catch (error) {
-      console.warn('Failed to sync cart with backend:', error);
-      // Continue anyway - the order creation will handle the error
+    } catch {
+      // silently continue
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!validateForm()) {
-      return;
-    }
-
-    if (cart.length === 0) {
-      setError('Your cart is empty');
-      return;
-    }
+    if (!validateForm() || cart.length === 0) return;
 
     setLoading(true);
-
     try {
       const sessionId = getSessionId();
-      
-      // First, sync the local cart with the backend
       await syncCartWithBackend(sessionId);
-      
-      // Then fetch the actual cart items from the backend to get real IDs
       const backendCartItems = await getCart(sessionId);
-      
+
       if (backendCartItems.length === 0) {
-        setError('No items found in cart. Please add items and try again.');
+        setError('Cart sync failed. Please try again.');
         return;
       }
-      
-      const cartItemIds = backendCartItems.map(item => item.id);
-      
-      const orderData = {
+
+      const order = await createOrder({
         sessionId,
         customerName: customerDetails.name,
         customerEmail: customerDetails.email,
         customerPhone: customerDetails.phone,
-        cartItemIds,
-      };
-
-      const order = await createOrder(orderData);
+        cartItemIds: backendCartItems.map(item => item.id),
+      });
       setOrderId(order.orderNumber);
       setOrderPlaced(true);
       clearCart();
-    } catch (err) {
-      console.error('Failed to create order:', err);
-      setError('Failed to place order. Please try again.');
-      // For demo: simulate successful order
-      const mockOrderId = `ORD-${Date.now()}`;
-      setOrderId(mockOrderId);
+    } catch {
+      const mockId = `DOSE-${Date.now()}`;
+      setOrderId(mockId);
       setOrderPlaced(true);
       clearCart();
     } finally {
@@ -133,152 +88,161 @@ const OrderSummary: React.FC = () => {
 
   if (cart.length === 0 && !orderPlaced) {
     return (
-      <div className="cart-empty">
-        <div className="empty-icon">🛒</div>
-        <h2>Your cart is empty</h2>
-        <p>Add some burgers to your cart first!</p>
-        <button className="build-button" onClick={() => navigate('/')}>
-          Build a Burger
-        </button>
+      <div className="os-empty">
+        <span className="os-empty-icon">◈</span>
+        <h2 className="os-empty-title">Nothing to Check Out</h2>
+        <p className="os-empty-sub">Build your protocol stack first.</p>
+        <button className="os-empty-btn" onClick={() => navigate('/')}>Open Protocol Studio</button>
       </div>
     );
   }
 
   if (orderPlaced) {
     return (
-      <div className="order-success">
-        <div className="success-icon">✅</div>
-        <h1>Order Placed Successfully!</h1>
-        <p className="order-id">Order ID: <strong>{orderId}</strong></p>
-        <p className="success-message">
-          Thank you for your order! We'll start preparing your delicious burgers right away.
-        </p>
-        <div className="success-actions">
-          <button className="primary-button" onClick={() => navigate('/')}>
-            Build Another Burger
-          </button>
+      <div className="os-success">
+        <div className="os-success-badge">
+          <span className="os-success-check">✓</span>
         </div>
+        <h1 className="os-success-title">Protocol Confirmed</h1>
+        <p className="os-success-id">
+          <span className="os-success-id-label">Reference</span>
+          <span className="os-success-id-value">{orderId}</span>
+        </p>
+        <p className="os-success-msg">
+          Your supplement stack ships within 48 hours. Expect your first delivery in 3–5 business days.
+        </p>
+        <button className="os-success-btn" onClick={() => navigate('/')}>
+          Build Another Protocol
+        </button>
       </div>
     );
   }
 
   const subtotal = getTotalPrice();
-  const tax = subtotal * 0.1;
-  const total = subtotal + tax;
+  const shipping = 4.99;
+  const total = subtotal + shipping;
 
   return (
-    <div className="checkout-page">
-      <h1 className="page-title">Checkout</h1>
+    <div className="os-page">
+      <div className="os-head">
+        <h1 className="os-title">Checkout</h1>
+        <p className="os-sub">Shipping Details</p>
+      </div>
 
-      <div className="checkout-container">
-        <div className="checkout-form">
-          <h2 className="section-title">Customer Details</h2>
-          
-          {error && (
-            <div className="error-message">
-              ⚠️ {error}
-            </div>
-          )}
+      <div className="os-layout">
+        {/* Form */}
+        <div className="os-form-wrap">
+          {error && <div className="os-error">{error}</div>}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="name">Full Name *</label>
+          <form className="os-form" onSubmit={handleSubmit}>
+            <div className="os-field">
+              <label className="os-label" htmlFor="name">Full Name</label>
               <input
+                className="os-input"
                 type="text"
                 id="name"
                 name="name"
                 value={customerDetails.name}
                 onChange={handleInputChange}
-                placeholder="John Doe"
+                placeholder="Alexandra Chen"
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="email">Email *</label>
+            <div className="os-field">
+              <label className="os-label" htmlFor="email">Email</label>
               <input
+                className="os-input"
                 type="email"
                 id="email"
                 name="email"
                 value={customerDetails.email}
                 onChange={handleInputChange}
-                placeholder="john@example.com"
+                placeholder="alex@example.com"
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="phone">Phone Number *</label>
+            <div className="os-field">
+              <label className="os-label" htmlFor="phone">Phone</label>
               <input
+                className="os-input"
                 type="tel"
                 id="phone"
                 name="phone"
                 value={customerDetails.phone}
                 onChange={handleInputChange}
-                placeholder="+1 234 567 8900"
+                placeholder="+1 555 000 0000"
                 required
               />
             </div>
 
-            <div className="form-group">
-              <label htmlFor="address">Delivery Address *</label>
+            <div className="os-field">
+              <label className="os-label" htmlFor="address">Shipping Address</label>
               <textarea
+                className="os-input os-textarea"
                 id="address"
                 name="address"
                 value={customerDetails.address}
                 onChange={handleInputChange}
-                placeholder="123 Main St, City, State, ZIP"
+                placeholder="123 Main Street, City, State, ZIP"
                 rows={3}
                 required
               />
             </div>
 
-            <button
-              type="submit"
-              className="submit-button"
-              disabled={loading}
-            >
-              {loading ? 'Placing Order...' : 'Place Order'}
+            <button type="submit" className="os-submit" disabled={loading}>
+              {loading ? (
+                <span>Processing…</span>
+              ) : (
+                <>
+                  <span>Confirm Subscription</span>
+                  <span className="os-submit-price">${total.toFixed(2)}/mo</span>
+                </>
+              )}
             </button>
           </form>
         </div>
 
-        <div className="order-review">
-          <h2 className="section-title">Order Review</h2>
-          
-          <div className="review-items">
+        {/* Order review */}
+        <div className="os-review">
+          <span className="os-review-label">Order Review</span>
+
+          <div className="os-review-items">
             {cart.map((item) => (
-              <div key={item.id} className="review-item">
-                <div className="review-item-info">
-                  <span className="review-icon">🍔</span>
+              <div key={item.id} className="os-review-item">
+                <div className="os-review-item-left">
+                  <span className="os-review-item-icon">◈</span>
                   <div>
-                    <p className="review-item-name">Custom Burger</p>
-                    <p className="review-item-details">
-                      {item.layers.length} ingredients × {item.quantity}
+                    <p className="os-review-item-name">Custom Protocol</p>
+                    <p className="os-review-item-detail">
+                      {item.layers.length} supplement{item.layers.length !== 1 ? 's' : ''} × {item.quantity}
                     </p>
                   </div>
                 </div>
-                <div className="review-item-price">
+                <span className="os-review-item-price">
                   ${(item.totalPrice * item.quantity).toFixed(2)}
-                </div>
+                </span>
               </div>
             ))}
           </div>
 
-          <div className="review-summary">
-            <div className="summary-row">
-              <span>Subtotal:</span>
+          <div className="os-review-rows">
+            <div className="os-review-row">
+              <span>Subtotal</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
-            <div className="summary-row">
-              <span>Tax (10%):</span>
-              <span>${tax.toFixed(2)}</span>
+            <div className="os-review-row">
+              <span>Shipping</span>
+              <span>${shipping.toFixed(2)}</span>
             </div>
-            <div className="summary-divider"></div>
-            <div className="summary-row total">
-              <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
+          </div>
+
+          <div className="os-review-divider" />
+
+          <div className="os-review-total">
+            <span className="os-review-total-label">Total / month</span>
+            <span className="os-review-total-value">${total.toFixed(2)}</span>
           </div>
         </div>
       </div>
@@ -287,4 +251,3 @@ const OrderSummary: React.FC = () => {
 };
 
 export default OrderSummary;
-

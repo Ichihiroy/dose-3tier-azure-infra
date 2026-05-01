@@ -1,103 +1,36 @@
--- Sample data for Burger Builder application (SQL Server)
--- Only insert data if ingredient doesn't already exist (idempotent initialization)
+-- DOSE supplement data (SQL Server)
 
--- Insert ingredients only if they don't already exist
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Classic Sesame Bun', 'buns', 1.50, 'Fresh sesame seed bun', '/images/buns/sesame-bun.jpg', 1, 1
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Classic Sesame Bun');
+DELETE FROM order_layers;
+DELETE FROM order_items;
+DELETE FROM orders;
+DELETE FROM burger_layers;
+DELETE FROM cart_items;
+DELETE FROM ingredients;
 
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Whole Wheat Bun', 'buns', 1.75, 'Healthy whole wheat bun', '/images/buns/whole-wheat-bun.jpg', 1, 2
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Whole Wheat Bun');
+-- ENERGY
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Ashwagandha', 'energy', 0.89, 'Reduces cortisol, supports energy and stress resilience', NULL, 1, 1);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Vitamin B12', 'energy', 0.45, 'Essential for cellular energy production and nerve function', NULL, 1, 2);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('CoQ10', 'energy', 1.20, 'Mitochondrial energy support and antioxidant protection', NULL, 1, 3);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Rhodiola Rosea', 'energy', 0.95, 'Adaptogen for physical and mental stamina under stress', NULL, 1, 4);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Panax Ginseng', 'energy', 1.10, 'Traditional adaptogen for sustained vitality and recovery', NULL, 1, 5);
 
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Brioche Bun', 'buns', 2.00, 'Rich and buttery brioche bun', '/images/buns/brioche-bun.jpg', 1, 3
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Brioche Bun');
+-- FOCUS
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Lion''s Mane', 'focus', 1.10, 'Stimulates NGF production for cognitive enhancement', NULL, 1, 1);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('L-Theanine', 'focus', 0.60, 'Alpha brainwave promotion for calm, focused attention', NULL, 1, 2);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Bacopa Monnieri', 'focus', 0.75, 'Memory consolidation and learning rate enhancement', NULL, 1, 3);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Alpha-GPC', 'focus', 1.35, 'Choline precursor for acetylcholine synthesis and recall', NULL, 1, 4);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Phosphatidylserine', 'focus', 0.90, 'Cell membrane support for executive function and memory', NULL, 1, 5);
 
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Gluten-Free Bun', 'buns', 2.25, 'Gluten-free alternative bun', '/images/buns/gluten-free-bun.jpg', 1, 4
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Gluten-Free Bun');
+-- IMMUNITY
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Vitamin C', 'immunity', 0.35, 'Antioxidant and immune cell function support', NULL, 1, 1);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Zinc Picolinate', 'immunity', 0.50, 'Immune response regulation and wound healing', NULL, 1, 2);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Elderberry Extract', 'immunity', 0.80, 'Antiviral properties and upper respiratory support', NULL, 1, 3);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Vitamin D3 + K2', 'immunity', 0.65, 'Immune modulation, bone health and cardiovascular support', NULL, 1, 4);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Quercetin', 'immunity', 0.85, 'Flavonoid anti-inflammatory and immune system modulator', NULL, 1, 5);
 
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Beef Patty', 'patties', 4.50, 'Juicy 100% beef patty', '/images/patties/beef-patty.jpg', 1, 1
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Beef Patty');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Chicken Breast', 'patties', 4.25, 'Grilled chicken breast', '/images/patties/chicken-breast.jpg', 1, 2
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Chicken Breast');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Turkey Patty', 'patties', 4.00, 'Lean turkey patty', '/images/patties/turkey-patty.jpg', 1, 3
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Turkey Patty');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Veggie Patty', 'patties', 3.75, 'Plant-based veggie patty', '/images/patties/veggie-patty.jpg', 1, 4
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Veggie Patty');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Salmon Patty', 'patties', 5.50, 'Fresh salmon patty', '/images/patties/salmon-patty.jpg', 1, 5
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Salmon Patty');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Lettuce', 'toppings', 0.50, 'Fresh crisp lettuce', '/images/toppings/lettuce.jpg', 1, 1
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Lettuce');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Tomato', 'toppings', 0.75, 'Fresh tomato slices', '/images/toppings/tomato.jpg', 1, 2
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Tomato');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Onion', 'toppings', 0.50, 'Raw or grilled onions', '/images/toppings/onion.jpg', 1, 3
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Onion');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Pickles', 'toppings', 0.50, 'Dill pickle slices', '/images/toppings/pickles.jpg', 1, 4
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Pickles');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Mushrooms', 'toppings', 1.00, 'Sautéed mushrooms', '/images/toppings/mushrooms.jpg', 1, 5
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Mushrooms');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Bacon', 'toppings', 1.50, 'Crispy bacon strips', '/images/toppings/bacon.jpg', 1, 6
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Bacon');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Avocado', 'toppings', 1.25, 'Fresh avocado slices', '/images/toppings/avocado.jpg', 1, 7
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Avocado');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Jalapeños', 'toppings', 0.75, 'Spicy jalapeño peppers', '/images/toppings/jalapenos.jpg', 1, 8
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Jalapeños');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Ketchup', 'sauces', 0.25, 'Classic tomato ketchup', '/images/sauces/ketchup.jpg', 1, 1
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Ketchup');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Mustard', 'sauces', 0.25, 'Yellow mustard', '/images/sauces/mustard.jpg', 1, 2
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Mustard');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Mayo', 'sauces', 0.25, 'Creamy mayonnaise', '/images/sauces/mayo.jpg', 1, 3
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Mayo');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'BBQ Sauce', 'sauces', 0.50, 'Smoky BBQ sauce', '/images/sauces/bbq-sauce.jpg', 1, 4
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'BBQ Sauce');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Ranch', 'sauces', 0.50, 'Creamy ranch dressing', '/images/sauces/ranch.jpg', 1, 5
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Ranch');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Sriracha', 'sauces', 0.50, 'Spicy sriracha sauce', '/images/sauces/sriracha.jpg', 1, 6
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Sriracha');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Aioli', 'sauces', 0.75, 'Garlic aioli', '/images/sauces/aioli.jpg', 1, 7
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Aioli');
-
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT 'Buffalo Sauce', 'sauces', 0.50, 'Spicy buffalo sauce', '/images/sauces/buffalo-sauce.jpg', 1, 8
-WHERE NOT EXISTS (SELECT 1 FROM ingredients WHERE name = 'Buffalo Sauce');
+-- LONGEVITY
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('NMN', 'longevity', 2.50, 'NAD+ precursor for cellular energy and aging pathways', NULL, 1, 1);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Resveratrol', 'longevity', 1.80, 'Sirtuin activation and cellular senescence reduction', NULL, 1, 2);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Omega-3', 'longevity', 0.70, 'EPA/DHA for cardiovascular and neurological health', NULL, 1, 3);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Magnesium Glycinate', 'longevity', 0.55, 'Cofactor in 300+ enzymatic processes, sleep quality', NULL, 1, 4);
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES ('Spermidine', 'longevity', 3.20, 'Autophagy induction for cellular renewal and longevity', NULL, 1, 5);

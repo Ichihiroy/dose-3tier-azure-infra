@@ -4,75 +4,51 @@ import userEvent from '@testing-library/user-event';
 import IngredientCard from './IngredientCard';
 import type { Ingredient } from '../../types';
 
-describe('IngredientCard', () => {
-  const mockIngredient: Ingredient = {
+describe('SupplementCard (IngredientCard)', () => {
+  const mockSupplement: Ingredient = {
     id: 1,
-    name: 'Beef Patty',
-    category: 'patties',
-    price: 5.99,
-    imageUrl: 'patty.jpg',
+    name: "Lion's Mane",
+    category: 'focus',
+    price: 1.10,
+    imageUrl: null,
   };
 
   const mockOnAdd = vi.fn();
 
-  it('should render ingredient name', () => {
-    render(<IngredientCard ingredient={mockIngredient} onAdd={mockOnAdd} />);
-    expect(screen.getByText('Beef Patty')).toBeInTheDocument();
+  it('renders supplement name', () => {
+    render(<IngredientCard ingredient={mockSupplement} onAdd={mockOnAdd} />);
+    expect(screen.getByText("Lion's Mane")).toBeInTheDocument();
   });
 
-  it('should render ingredient price with 2 decimal places', () => {
-    render(<IngredientCard ingredient={mockIngredient} onAdd={mockOnAdd} />);
-    expect(screen.getByText('$5.99')).toBeInTheDocument();
+  it('renders price with 2 decimal places', () => {
+    render(<IngredientCard ingredient={mockSupplement} onAdd={mockOnAdd} />);
+    expect(screen.getByText('$1.10 / serving')).toBeInTheDocument();
   });
 
-  it('should render correct icon for patties category', () => {
-    render(<IngredientCard ingredient={mockIngredient} onAdd={mockOnAdd} />);
-    expect(screen.getByText('🥩')).toBeInTheDocument();
+  it('renders category badge', () => {
+    render(<IngredientCard ingredient={mockSupplement} onAdd={mockOnAdd} />);
+    expect(screen.getByText('focus')).toBeInTheDocument();
   });
 
-  it('should render correct icon for buns category', () => {
-    const bunsIngredient = { ...mockIngredient, category: 'buns' as const };
-    render(<IngredientCard ingredient={bunsIngredient} onAdd={mockOnAdd} />);
-    expect(screen.getByText('🍞')).toBeInTheDocument();
-  });
-
-  it('should render correct icon for toppings category', () => {
-    const toppingsIngredient = { ...mockIngredient, category: 'toppings' as const };
-    render(<IngredientCard ingredient={toppingsIngredient} onAdd={mockOnAdd} />);
-    expect(screen.getByText('🥬')).toBeInTheDocument();
-  });
-
-  it('should render correct icon for sauces category', () => {
-    const saucesIngredient = { ...mockIngredient, category: 'sauces' as const };
-    render(<IngredientCard ingredient={saucesIngredient} onAdd={mockOnAdd} />);
-    expect(screen.getByText('🧂')).toBeInTheDocument();
-  });
-
-  it('should call onAdd with ingredient id when card is clicked', async () => {
+  it('calls onAdd with ingredient id when add button clicked', async () => {
     const user = userEvent.setup();
-    render(<IngredientCard ingredient={mockIngredient} onAdd={mockOnAdd} />);
-    
-    const card = screen.getByText('Beef Patty').closest('.ingredient-card');
-    await user.click(card!);
-
-    expect(mockOnAdd).toHaveBeenCalledWith(mockIngredient.id);
+    render(<IngredientCard ingredient={mockSupplement} onAdd={mockOnAdd} />);
+    await user.click(screen.getByText('+'));
+    expect(mockOnAdd).toHaveBeenCalledWith(mockSupplement.id);
     expect(mockOnAdd).toHaveBeenCalledTimes(1);
   });
 
-  it('should call onAdd when add button is clicked', async () => {
+  it('calls onAdd when card is clicked', async () => {
     const user = userEvent.setup();
-    render(<IngredientCard ingredient={mockIngredient} onAdd={mockOnAdd} />);
-    
-    const addButton = screen.getByText('Add +');
-    await user.click(addButton);
-
-    expect(mockOnAdd).toHaveBeenCalledWith(mockIngredient.id);
+    render(<IngredientCard ingredient={mockSupplement} onAdd={mockOnAdd} />);
+    const card = screen.getByText("Lion's Mane").closest('.ingredient-card');
+    await user.click(card!);
+    expect(mockOnAdd).toHaveBeenCalledWith(mockSupplement.id);
   });
 
-  it('should format price with whole numbers correctly', () => {
-    const wholeNumberIngredient = { ...mockIngredient, price: 3 };
-    render(<IngredientCard ingredient={wholeNumberIngredient} onAdd={mockOnAdd} />);
-    expect(screen.getByText('$3.00')).toBeInTheDocument();
+  it('formats whole number price correctly', () => {
+    const wholePrice = { ...mockSupplement, price: 2 };
+    render(<IngredientCard ingredient={wholePrice} onAdd={mockOnAdd} />);
+    expect(screen.getByText('$2.00 / serving')).toBeInTheDocument();
   });
 });
-

@@ -1,37 +1,34 @@
--- Sample data for Burger Builder application (PostgreSQL)
--- Only insert data if table is empty (one-time initialization)
+-- DOSE supplement data (PostgreSQL)
 
--- Check if ingredients table has data, if not insert default ingredients
-INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order)
-SELECT * FROM (VALUES
-    -- Buns
-    ('Classic Sesame Bun', 'buns', 1.50, 'Fresh sesame seed bun', '/images/buns/sesame-bun.jpg', true, 1),
-    ('Whole Wheat Bun', 'buns', 1.75, 'Healthy whole wheat bun', '/images/buns/whole-wheat-bun.jpg', true, 2),
-    ('Brioche Bun', 'buns', 2.00, 'Rich and buttery brioche bun', '/images/buns/brioche-bun.jpg', true, 3),
-    ('Gluten-Free Bun', 'buns', 2.25, 'Gluten-free alternative bun', '/images/buns/gluten-free-bun.jpg', true, 4),
-    -- Patties
-    ('Beef Patty', 'patties', 4.50, 'Juicy 100% beef patty', '/images/patties/beef-patty.jpg', true, 1),
-    ('Chicken Breast', 'patties', 4.25, 'Grilled chicken breast', '/images/patties/chicken-breast.jpg', true, 2),
-    ('Turkey Patty', 'patties', 4.00, 'Lean turkey patty', '/images/patties/turkey-patty.jpg', true, 3),
-    ('Veggie Patty', 'patties', 3.75, 'Plant-based veggie patty', '/images/patties/veggie-patty.jpg', true, 4),
-    ('Salmon Patty', 'patties', 5.50, 'Fresh salmon patty', '/images/patties/salmon-patty.jpg', true, 5),
-    -- Toppings
-    ('Lettuce', 'toppings', 0.50, 'Fresh crisp lettuce', '/images/toppings/lettuce.jpg', true, 1),
-    ('Tomato', 'toppings', 0.75, 'Fresh tomato slices', '/images/toppings/tomato.jpg', true, 2),
-    ('Onion', 'toppings', 0.50, 'Raw or grilled onions', '/images/toppings/onion.jpg', true, 3),
-    ('Pickles', 'toppings', 0.50, 'Dill pickle slices', '/images/toppings/pickles.jpg', true, 4),
-    ('Mushrooms', 'toppings', 1.00, 'Sautéed mushrooms', '/images/toppings/mushrooms.jpg', true, 5),
-    ('Bacon', 'toppings', 1.50, 'Crispy bacon strips', '/images/toppings/bacon.jpg', true, 6),
-    ('Avocado', 'toppings', 1.25, 'Fresh avocado slices', '/images/toppings/avocado.jpg', true, 7),
-    ('Jalapeños', 'toppings', 0.75, 'Spicy jalapeño peppers', '/images/toppings/jalapenos.jpg', true, 8),
-    -- Sauces
-    ('Ketchup', 'sauces', 0.25, 'Classic tomato ketchup', '/images/sauces/ketchup.jpg', true, 1),
-    ('Mustard', 'sauces', 0.25, 'Yellow mustard', '/images/sauces/mustard.jpg', true, 2),
-    ('Mayo', 'sauces', 0.25, 'Creamy mayonnaise', '/images/sauces/mayo.jpg', true, 3),
-    ('BBQ Sauce', 'sauces', 0.50, 'Smoky BBQ sauce', '/images/sauces/bbq-sauce.jpg', true, 4),
-    ('Ranch', 'sauces', 0.50, 'Creamy ranch dressing', '/images/sauces/ranch.jpg', true, 5),
-    ('Sriracha', 'sauces', 0.50, 'Spicy sriracha sauce', '/images/sauces/sriracha.jpg', true, 6),
-    ('Aioli', 'sauces', 0.75, 'Garlic aioli', '/images/sauces/aioli.jpg', true, 7),
-    ('Buffalo Sauce', 'sauces', 0.50, 'Spicy buffalo sauce', '/images/sauces/buffalo-sauce.jpg', true, 8)
-) AS v(name, category, price, description, image_url, is_available, sort_order)
-WHERE NOT EXISTS (SELECT 1 FROM ingredients LIMIT 1);
+DELETE FROM order_layers;
+DELETE FROM order_items;
+DELETE FROM orders;
+DELETE FROM burger_layers;
+DELETE FROM cart_items;
+DELETE FROM ingredients;
+
+INSERT INTO ingredients (name, category, price, description, image_url, is_available, sort_order) VALUES
+  -- ENERGY
+  ('Ashwagandha',    'energy',    0.89, 'Reduces cortisol, supports energy and stress resilience',             NULL, true, 1),
+  ('Vitamin B12',    'energy',    0.45, 'Essential for cellular energy production and nerve function',          NULL, true, 2),
+  ('CoQ10',          'energy',    1.20, 'Mitochondrial energy support and antioxidant protection',              NULL, true, 3),
+  ('Rhodiola Rosea', 'energy',    0.95, 'Adaptogen for physical and mental stamina under stress',               NULL, true, 4),
+  ('Panax Ginseng',  'energy',    1.10, 'Traditional adaptogen for sustained vitality and recovery',            NULL, true, 5),
+  -- FOCUS
+  ('Lion''s Mane',       'focus', 1.10, 'Stimulates NGF production for cognitive enhancement',                 NULL, true, 1),
+  ('L-Theanine',         'focus', 0.60, 'Alpha brainwave promotion for calm, focused attention',                NULL, true, 2),
+  ('Bacopa Monnieri',    'focus', 0.75, 'Memory consolidation and learning rate enhancement',                   NULL, true, 3),
+  ('Alpha-GPC',          'focus', 1.35, 'Choline precursor for acetylcholine synthesis and recall',             NULL, true, 4),
+  ('Phosphatidylserine', 'focus', 0.90, 'Cell membrane support for executive function and memory',              NULL, true, 5),
+  -- IMMUNITY
+  ('Vitamin C',         'immunity', 0.35, 'Antioxidant and immune cell function support',                       NULL, true, 1),
+  ('Zinc Picolinate',   'immunity', 0.50, 'Immune response regulation and wound healing',                       NULL, true, 2),
+  ('Elderberry Extract','immunity', 0.80, 'Antiviral properties and upper respiratory support',                  NULL, true, 3),
+  ('Vitamin D3 + K2',   'immunity', 0.65, 'Immune modulation, bone health and cardiovascular support',          NULL, true, 4),
+  ('Quercetin',         'immunity', 0.85, 'Flavonoid anti-inflammatory and immune system modulator',            NULL, true, 5),
+  -- LONGEVITY
+  ('NMN',                'longevity', 2.50, 'NAD+ precursor for cellular energy and aging pathways',            NULL, true, 1),
+  ('Resveratrol',        'longevity', 1.80, 'Sirtuin activation and cellular senescence reduction',             NULL, true, 2),
+  ('Omega-3',            'longevity', 0.70, 'EPA/DHA for cardiovascular and neurological health',               NULL, true, 3),
+  ('Magnesium Glycinate','longevity', 0.55, 'Cofactor in 300+ enzymatic processes, sleep quality',              NULL, true, 4),
+  ('Spermidine',         'longevity', 3.20, 'Autophagy induction for cellular renewal and longevity',          NULL, true, 5);

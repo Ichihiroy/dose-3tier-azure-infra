@@ -1,9 +1,9 @@
 export interface Ingredient {
   id: number;
   name: string;
-  category: 'buns' | 'patties' | 'toppings' | 'sauces';
+  category: 'energy' | 'focus' | 'immunity' | 'longevity' | 'buns' | 'patties' | 'toppings' | 'sauces';
   price: number;
-  imageUrl: string;
+  imageUrl: string | null;
 }
 
 export interface BurgerLayer {
@@ -53,5 +53,4 @@ export interface IngredientsResponse {
   buns: Ingredient[];
 }
 
-export type IngredientCategory = 'buns' | 'patties' | 'toppings' | 'sauces';
-
+export type IngredientCategory = 'energy' | 'focus' | 'immunity' | 'longevity';

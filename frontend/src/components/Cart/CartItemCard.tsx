@@ -10,46 +10,45 @@ interface CartItemCardProps {
 
 const CartItemCard: React.FC<CartItemCardProps> = ({ item, onUpdateQuantity, onRemove }) => {
   return (
-    <div className="cart-item-card">
-      <div className="item-info">
-        <div className="item-icon">🍔</div>
-        <div className="item-details">
-          <h3 className="item-title">Custom Burger</h3>
-          <p className="item-layers">{item.layers.length} ingredients</p>
-          <p className="item-price">${item.totalPrice.toFixed(2)} each</p>
+    <div className="cic-root">
+      <div className="cic-left">
+        <div className="cic-index">
+          <span className="cic-stack-icon">◈</span>
+        </div>
+        <div className="cic-info">
+          <span className="cic-label">Custom Protocol</span>
+          <span className="cic-count">{item.layers.length} supplement{item.layers.length !== 1 ? 's' : ''}</span>
+          <span className="cic-price">${item.totalPrice.toFixed(2)} / serving</span>
         </div>
       </div>
 
-      <div className="item-actions">
-        <div className="quantity-controls">
+      <div className="cic-right">
+        <div className="cic-qty">
           <button
-            className="quantity-button"
+            className="cic-qty-btn"
             onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-            aria-label="Decrease quantity"
+            aria-label="Decrease"
           >
             −
           </button>
-          <span className="quantity-value">{item.quantity}</span>
+          <span className="cic-qty-val">{item.quantity}</span>
           <button
-            className="quantity-button"
+            className="cic-qty-btn"
             onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-            aria-label="Increase quantity"
+            aria-label="Increase"
           >
             +
           </button>
         </div>
 
-        <div className="item-total">
-          <span className="total-label">Total:</span>
-          <span className="total-value">${(item.totalPrice * item.quantity).toFixed(2)}</span>
-        </div>
+        <span className="cic-total">${(item.totalPrice * item.quantity).toFixed(2)}</span>
 
         <button
-          className="remove-button"
+          className="cic-remove"
           onClick={() => onRemove(item.id)}
-          aria-label="Remove item"
+          aria-label="Remove"
         >
-          🗑️ Remove
+          ×
         </button>
       </div>
     </div>
@@ -57,4 +56,3 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item, onUpdateQuantity, onR
 };
 
 export default CartItemCard;
-

@@ -1,34 +1,37 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import './Header.css';
 
-const Header: React.FC = () => {
+export default function Header() {
   const { getTotalItems } = useCart();
-  const itemCount = getTotalItems();
+  const { pathname } = useLocation();
+  const totalItems = getTotalItems();
 
   return (
     <header className="header">
-      <div className="header-container">
-        <Link to="/" className="logo">
-          <h1>🍔 Burger Builder</h1>
+      <div className="header-inner">
+        <Link to="/" className="header-logo">
+          <span className="logo-mark">DOSE</span>
+          <span className="logo-sub">Protocol Studio</span>
         </Link>
-        
-        <nav className="nav">
-          <Link to="/" className="nav-link">Build</Link>
-          <Link to="/orders" className="nav-link">Orders</Link>
-          <Link to="/cart" className="nav-link cart-link">
-            <span className="cart-icon">🛒</span>
-            Cart
-            {itemCount > 0 && (
-              <span className="cart-badge">{itemCount}</span>
-            )}
+
+        <nav className="header-nav">
+          <Link to="/" className={`nav-link ${pathname === '/' ? 'active' : ''}`}>
+            Build
+          </Link>
+          <Link to="/orders" className={`nav-link ${pathname === '/orders' ? 'active' : ''}`}>
+            Shipments
           </Link>
         </nav>
+
+        <Link to="/cart" className="header-cart">
+          <span className="cart-icon">◈</span>
+          <span className="cart-label">My Stack</span>
+          {totalItems > 0 && (
+            <span className="cart-badge">{totalItems}</span>
+          )}
+        </Link>
       </div>
     </header>
   );
-};
-
-export default Header;
-
+}

@@ -3,6 +3,18 @@ import { getOrderHistory, getOrdersByCustomerEmail } from '../../services/api';
 import type { Order } from '../../types';
 import './OrderHistory.css';
 
+const STATUS_META: Record<string, { label: string; color: string }> = {
+  pending:   { label: 'Pending',   color: 'var(--accent-gold)' },
+  confirmed: { label: 'Confirmed', color: 'var(--accent-cyan)' },
+  preparing: { label: 'Preparing', color: '#F59E0B' },
+  ready:     { label: 'Ready',     color: '#10B981' },
+  delivered: { label: 'Delivered', color: '#8B5CF6' },
+  cancelled: { label: 'Cancelled', color: 'rgba(239,68,68,0.8)' },
+};
+
+const formatDate = (d: string) =>
+  new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+
 const OrderHistory: React.FC = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -10,223 +22,127 @@ const OrderHistory: React.FC = () => {
   const [filterEmail, setFilterEmail] = useState('');
   const [showFilter, setShowFilter] = useState(false);
 
-  useEffect(() => {
-    loadOrderHistory();
-  }, []);
+  useEffect(() => { load(); }, []);
 
-  const loadOrderHistory = async (email?: string) => {
+  const load = async (email?: string) => {
     try {
       setLoading(true);
       setError(null);
-      
-      let orderData: Order[];
-      if (email && email.trim()) {
-        orderData = await getOrdersByCustomerEmail(email.trim());
-      } else {
-        orderData = await getOrderHistory();
-      }
-      
-      setOrders(orderData);
-    } catch (err) {
-      console.error('Failed to load order history:', err);
-      setError('Failed to load order history. Please try again.');
+      const data = email?.trim()
+        ? await getOrdersByCustomerEmail(email.trim())
+        : await getOrderHistory();
+      setOrders(data);
+    } catch {
+      setError('Failed to load shipments.');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleFilterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    loadOrderHistory(filterEmail);
-  };
+  const handleFilter = (e: React.FormEvent) => { e.preventDefault(); load(filterEmail); };
 
-  const clearFilter = () => {
-    setFilterEmail('');
-    setShowFilter(false);
-    loadOrderHistory();
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return '#ffc107';
-      case 'confirmed':
-        return '#17a2b8';
-      case 'preparing':
-        return '#fd7e14';
-      case 'ready':
-        return '#28a745';
-      case 'delivered':
-        return '#6f42c1';
-      case 'cancelled':
-        return '#dc3545';
-      default:
-        return '#6c757d';
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return '⏳';
-      case 'confirmed':
-        return '✅';
-      case 'preparing':
-        return '🍳';
-      case 'ready':
-        return '📦';
-      case 'delivered':
-        return '🚚';
-      case 'cancelled':
-        return '❌';
-      default:
-        return '❓';
-    }
-  };
+  const clearFilter = () => { setFilterEmail(''); setShowFilter(false); load(); };
 
   if (loading) {
     return (
-      <div className="order-history">
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading order history...</p>
-        </div>
+      <div className="oh-loading">
+        <span className="oh-dot" /><span className="oh-dot" /><span className="oh-dot" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="order-history">
-        <div className="error-container">
-          <div className="error-icon">⚠️</div>
-          <p>{error}</p>
-          <button className="retry-button" onClick={() => loadOrderHistory()}>
-            Try Again
-          </button>
-        </div>
+      <div className="oh-error">
+        <p>{error}</p>
+        <button className="oh-retry" onClick={() => load()}>Retry</button>
       </div>
     );
   }
 
   return (
-    <div className="order-history">
-      <div className="order-history-header">
-        <h1>Order History</h1>
-        <div className="header-actions">
-          <button 
-            className="filter-button"
-            onClick={() => setShowFilter(!showFilter)}
-          >
-            🔍 Filter by Email
+    <div className="oh-page">
+      <div className="oh-head">
+        <div>
+          <h1 className="oh-title">My Shipments</h1>
+          <p className="oh-sub">{orders.length} protocol{orders.length !== 1 ? 's' : ''} on record</p>
+        </div>
+        <div className="oh-head-actions">
+          <button className="oh-filter-toggle" onClick={() => setShowFilter(v => !v)}>
+            {showFilter ? 'Hide Filter' : 'Filter by Email'}
           </button>
-          <button 
-            className="refresh-button"
-            onClick={() => loadOrderHistory(filterEmail)}
-          >
-            🔄 Refresh
-          </button>
+          <button className="oh-refresh" onClick={() => load(filterEmail)}>Refresh</button>
         </div>
       </div>
 
       {showFilter && (
-        <div className="filter-section">
-          <form onSubmit={handleFilterSubmit}>
-            <div className="filter-input-group">
-              <input
-                type="email"
-                placeholder="Enter customer email to filter"
-                value={filterEmail}
-                onChange={(e) => setFilterEmail(e.target.value)}
-                className="filter-input"
-              />
-              <button type="submit" className="filter-submit-button">
-                Filter
-              </button>
-              <button 
-                type="button" 
-                onClick={clearFilter}
-                className="clear-filter-button"
-              >
-                Clear
-              </button>
-            </div>
-          </form>
-        </div>
+        <form className="oh-filter-form" onSubmit={handleFilter}>
+          <input
+            className="oh-filter-input"
+            type="email"
+            placeholder="customer@example.com"
+            value={filterEmail}
+            onChange={e => setFilterEmail(e.target.value)}
+          />
+          <button type="submit" className="oh-filter-submit">Search</button>
+          <button type="button" className="oh-filter-clear" onClick={clearFilter}>Clear</button>
+        </form>
       )}
 
       {orders.length === 0 ? (
-        <div className="no-orders">
-          <div className="no-orders-icon">📋</div>
-          <h2>No orders found</h2>
-          <p>
-            {filterEmail 
-              ? `No orders found for email: ${filterEmail}`
-              : 'No orders have been placed yet.'
-            }
+        <div className="oh-empty">
+          <span className="oh-empty-icon">◈</span>
+          <h2 className="oh-empty-title">No Shipments Found</h2>
+          <p className="oh-empty-sub">
+            {filterEmail ? `No orders for ${filterEmail}` : 'No protocols have shipped yet.'}
           </p>
           {filterEmail && (
-            <button className="clear-filter-button" onClick={clearFilter}>
-              Show All Orders
-            </button>
+            <button className="oh-clear-btn" onClick={clearFilter}>Show All</button>
           )}
         </div>
       ) : (
-        <div className="orders-list">
-          {orders.map((order) => (
-            <div key={order.id} className="order-card">
-              <div className="order-header">
-                <div className="order-info">
-                  <h3 className="order-number">#{order.orderNumber}</h3>
-                  <p className="order-date">{formatDate(order.createdAt)}</p>
+        <div className="oh-list">
+          {orders.map((order) => {
+            const meta = STATUS_META[order.status.toLowerCase()] ?? { label: order.status, color: 'var(--text-muted)' };
+            return (
+              <div key={order.id} className="oh-card">
+                <div className="oh-card-top">
+                  <div className="oh-card-id">
+                    <span className="oh-card-num">{order.orderNumber}</span>
+                    <span className="oh-card-date">{formatDate(order.createdAt)}</span>
+                  </div>
+                  <span
+                    className="oh-status"
+                    style={{ '--status-color': meta.color } as React.CSSProperties}
+                  >
+                    {meta.label}
+                  </span>
                 </div>
-                <div 
-                  className="order-status"
-                  style={{ backgroundColor: getStatusColor(order.status) }}
-                >
-                  <span className="status-icon">{getStatusIcon(order.status)}</span>
-                  <span className="status-text">{order.status}</span>
-                </div>
-              </div>
-              
-              <div className="order-details">
-                <div className="customer-info">
-                  <p><strong>Customer:</strong> {order.customerName}</p>
-                  <p><strong>Email:</strong> {order.customerEmail}</p>
-                  {order.customerPhone && (
-                    <p><strong>Phone:</strong> {order.customerPhone}</p>
-                  )}
-                </div>
-                
-                <div className="order-summary">
-                  <p className="total-amount">
-                    <strong>Total: ${order.totalAmount.toFixed(2)}</strong>
-                  </p>
-                  {order.orderItems && order.orderItems.length > 0 && (
-                    <div className="order-items-count">
-                      {order.orderItems.length} item(s)
-                    </div>
-                  )}
-                </div>
-              </div>
 
-              {order.updatedAt && order.updatedAt !== order.createdAt && (
-                <div className="order-updated">
-                  <small>Last updated: {formatDate(order.updatedAt)}</small>
+                <div className="oh-card-body">
+                  <div className="oh-customer">
+                    <span className="oh-customer-name">{order.customerName}</span>
+                    <span className="oh-customer-email">{order.customerEmail}</span>
+                  </div>
+                  <div className="oh-amount">
+                    <span className="oh-amount-label">Total</span>
+                    <span className="oh-amount-value">${order.totalAmount.toFixed(2)}</span>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+
+                {order.orderItems && order.orderItems.length > 0 && (
+                  <div className="oh-card-footer">
+                    <span className="oh-items-count">
+                      {order.orderItems.length} supplement{order.orderItems.length !== 1 ? 's' : ''}
+                    </span>
+                    {order.updatedAt && order.updatedAt !== order.createdAt && (
+                      <span className="oh-updated">Updated {formatDate(order.updatedAt)}</span>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

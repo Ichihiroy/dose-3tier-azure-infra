@@ -8,34 +8,36 @@ const Cart: React.FC = () => {
   const { cart, removeItemFromCart, updateItemQuantity, clearCart, getTotalPrice } = useCart();
   const navigate = useNavigate();
 
-  const handleCheckout = () => {
-    if (cart.length === 0) return;
-    navigate('/checkout');
-  };
-
   if (cart.length === 0) {
     return (
       <div className="cart-empty">
-        <div className="empty-icon">🛒</div>
-        <h2>Your cart is empty</h2>
-        <p>Start building your perfect burger!</p>
-        <button className="build-button" onClick={() => navigate('/')}>
-          Build a Burger
+        <span className="cart-empty-icon">◈</span>
+        <h2 className="cart-empty-title">No Active Protocols</h2>
+        <p className="cart-empty-sub">Build your personalized supplement stack to get started.</p>
+        <button className="cart-empty-btn" onClick={() => navigate('/')}>
+          Open Protocol Studio
         </button>
       </div>
     );
   }
 
+  const subtotal = getTotalPrice();
+  const shipping = 4.99;
+  const total = subtotal + shipping;
+
   return (
     <div className="cart-page">
-      <div className="cart-header">
-        <h1>Your Cart</h1>
-        <button className="clear-all-button" onClick={clearCart}>
+      <div className="cart-head">
+        <div>
+          <h1 className="cart-title">My Stack</h1>
+          <p className="cart-sub">{cart.length} protocol{cart.length !== 1 ? 's' : ''} queued for dispatch</p>
+        </div>
+        <button className="cart-reset-btn" onClick={clearCart}>
           Clear All
         </button>
       </div>
 
-      <div className="cart-content">
+      <div className="cart-layout">
         <div className="cart-items">
           {cart.map((item) => (
             <CartItemCard
@@ -47,38 +49,45 @@ const Cart: React.FC = () => {
           ))}
         </div>
 
-        <div className="cart-summary">
-          <div className="summary-card">
-            <h2 className="summary-title">Order Summary</h2>
-            
-            <div className="summary-row">
-              <span className="summary-label">Items:</span>
-              <span className="summary-value">{cart.length}</span>
+        <div className="cart-sidebar">
+          <div className="cart-summary">
+            <span className="cart-summary-label">Order Summary</span>
+
+            <div className="cart-summary-rows">
+              <div className="cart-summary-row">
+                <span>Protocols</span>
+                <span>{cart.length}</span>
+              </div>
+              <div className="cart-summary-row">
+                <span>Subtotal</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              <div className="cart-summary-row">
+                <span>Shipping</span>
+                <span>${shipping.toFixed(2)}</span>
+              </div>
             </div>
 
-            <div className="summary-row">
-              <span className="summary-label">Subtotal:</span>
-              <span className="summary-value">${getTotalPrice().toFixed(2)}</span>
+            <div className="cart-summary-divider" />
+
+            <div className="cart-summary-total">
+              <span className="cart-summary-total-label">Total / month</span>
+              <span className="cart-summary-total-value">${total.toFixed(2)}</span>
             </div>
 
-            <div className="summary-row">
-              <span className="summary-label">Tax (10%):</span>
-              <span className="summary-value">${(getTotalPrice() * 0.1).toFixed(2)}</span>
-            </div>
-
-            <div className="summary-divider"></div>
-
-            <div className="summary-row total-row">
-              <span className="summary-label">Total:</span>
-              <span className="summary-value total">${(getTotalPrice() * 1.1).toFixed(2)}</span>
-            </div>
-
-            <button className="checkout-button" onClick={handleCheckout}>
-              Proceed to Checkout
+            <button
+              className="cart-checkout-btn"
+              onClick={() => navigate('/checkout')}
+            >
+              <span>Proceed to Checkout</span>
+              <span className="cart-checkout-arrow">→</span>
             </button>
 
-            <button className="continue-shopping" onClick={() => navigate('/')}>
-              Continue Shopping
+            <button
+              className="cart-continue-btn"
+              onClick={() => navigate('/')}
+            >
+              Add More Supplements
             </button>
           </div>
         </div>
@@ -88,4 +97,3 @@ const Cart: React.FC = () => {
 };
 
 export default Cart;
-

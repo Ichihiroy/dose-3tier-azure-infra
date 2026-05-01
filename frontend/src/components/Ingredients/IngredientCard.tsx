@@ -1,32 +1,47 @@
-import React from 'react';
 import type { Ingredient } from '../../types';
 import './IngredientCard.css';
 
 interface IngredientCardProps {
   ingredient: Ingredient;
-  onAdd: (ingredientId: number) => void;
+  onAdd: (id: number) => void;
 }
 
-const IngredientCard: React.FC<IngredientCardProps> = ({ ingredient, onAdd }) => {
+const CATEGORY_COLORS: Record<string, string> = {
+  energy:    'var(--energy)',
+  focus:     'var(--focus)',
+  immunity:  'var(--immunity)',
+  longevity: 'var(--longevity)',
+};
+
+export default function IngredientCard({ ingredient, onAdd }: IngredientCardProps) {
+  const color = CATEGORY_COLORS[ingredient.category] ?? 'var(--accent-cyan)';
+
   return (
-    <div className="ingredient-card" onClick={() => onAdd(ingredient.id)}>
-      <div className="ingredient-icon">{getCategoryIcon(ingredient.category)}</div>
-      <h3 className="ingredient-name">{ingredient.name}</h3>
-      <p className="ingredient-price">${ingredient.price.toFixed(2)}</p>
-      <button className="add-button">Add +</button>
+    <div
+      className="ingredient-card"
+      onClick={() => onAdd(ingredient.id)}
+      style={{ '--card-accent': color } as React.CSSProperties}
+    >
+      <div className="card-header">
+        <span className="card-category" style={{ color }}>{ingredient.category}</span>
+        <button
+          className="card-add"
+          onClick={e => { e.stopPropagation(); onAdd(ingredient.id); }}
+          aria-label={`Add ${ingredient.name}`}
+        >
+          +
+        </button>
+      </div>
+
+      <div className="card-name">{ingredient.name}</div>
+
+      {ingredient.description && (
+        <div className="card-desc">{ingredient.description}</div>
+      )}
+
+      <div className="card-price">
+        ${ingredient.price.toFixed(2)} / serving
+      </div>
     </div>
   );
-};
-
-const getCategoryIcon = (category: string): string => {
-  const icons: Record<string, string> = {
-    buns: '🍞',
-    patties: '🥩',
-    toppings: '🥬',
-    sauces: '🧂',
-  };
-  return icons[category] || '🍔';
-};
-
-export default IngredientCard;
-
+}
