@@ -112,6 +112,28 @@ resource "azurerm_key_vault_secret" "vm_admin_password" {
 }
 
 # 7. App Gateway — WAF v2, routes / → frontend, /api/* → backend
+
+# Managed identity for App Gateway — lives here so role assignment can precede appgw creation
+resource "azurerm_user_assigned_identity" "appgw" {
+  name                = "id-appgw-${local.prefix}"
+  location            = var.location
+  resource_group_name = azurerm_resource_group.main.name
+  tags                = local.tags
+}
+
+# Grant identity access to read the SSL cert from Key Vault
+resource "azurerm_role_assignment" "appgw_kv_cert" {
+  scope                = module.keyvault.key_vault_id
+  role_definition_name = "Key Vault Secrets User"
+  principal_id         = azurerm_user_assigned_identity.appgw.principal_id
+}
+
+# Wait for RBAC propagation before App Gateway tries to read the cert
+resource "time_sleep" "wait_for_appgw_kv_rbac" {
+  create_duration = "120s"
+  depends_on      = [azurerm_role_assignment.appgw_kv_cert]
+}
+
 resource "time_sleep" "wait_for_nsg_propagation" {
   create_duration = "60s"
   depends_on      = [module.network]
@@ -128,6 +150,8 @@ module "appgw" {
   frontend_private_ip        = module.compute.vm_web_private_ip
   backend_private_ip         = module.compute.vm_api_private_ip
   log_analytics_workspace_id = module.observability.workspace_id
+  ssl_cert_secret_id         = "https://kv-grp3-4niotw.vault.azure.net/secrets/dose-ssl/55c5a2f80601494d96de9ed8724d1e88"
+  identity_id                = azurerm_user_assigned_identity.appgw.id
 
-  depends_on = [time_sleep.wait_for_nsg_propagation]
+  depends_on = [time_sleep.wait_for_nsg_propagation, time_sleep.wait_for_appgw_kv_rbac]
 }

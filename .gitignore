@@ -37,3 +37,7 @@ infra/terraform/envs/*.tfvars
 # Local env files with real credentials
 environment.env
 
+# SSL certificates
+*.pfx
+*.pem
+

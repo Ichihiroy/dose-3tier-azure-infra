@@ -12,3 +12,4 @@ output "appgw_id" {
   description = "Application Gateway resource ID."
   value       = azurerm_application_gateway.main.id
 }
+

@@ -33,3 +33,13 @@ variable "log_analytics_workspace_id" {
   description = "Log Analytics workspace resource ID for diagnostic settings."
   type        = string
 }
+
+variable "ssl_cert_secret_id" {
+  description = "Key Vault secret ID for the SSL certificate (versioned sid)."
+  type        = string
+}
+
+variable "identity_id" {
+  description = "Resource ID of the user-assigned managed identity for App Gateway KV access."
+  type        = string
+}

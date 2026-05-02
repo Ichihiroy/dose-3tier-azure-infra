@@ -4,7 +4,7 @@ location     = "northeurope"
 owner        = "ironhack-team"
 
 # Replace with your actual IP before applying: curl -s ifconfig.me
-admin_source_cidr = "37.114.183.169"
+admin_source_cidr = "37.114.177.169"
 
 sql_admin_login = "sqladmin"
 
