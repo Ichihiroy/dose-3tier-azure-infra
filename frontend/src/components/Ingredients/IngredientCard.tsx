@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { Ingredient } from '../../types';
 import './IngredientCard.css';
 
-const CATEGORY_ICONS: Record<string, JSX.Element> = {
+const CATEGORY_ICONS: Record<string, React.ReactElement> = {
   energy: (
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
       <circle cx="10" cy="10" r="4" stroke="currentColor" strokeWidth="1.5"/>
