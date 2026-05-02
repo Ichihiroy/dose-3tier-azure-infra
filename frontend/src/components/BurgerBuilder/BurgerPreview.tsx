@@ -2,10 +2,10 @@ import { useBurgerBuilder } from '../../context/BurgerBuilderContext';
 import './BurgerPreview.css';
 
 const CATEGORY_COLORS: Record<string, string> = {
-  energy:    '#F59E0B',
-  focus:     '#00E5CC',
-  immunity:  '#10B981',
-  longevity: '#8B5CF6',
+  energy:    '#C4781A',
+  focus:     '#2D5A3D',
+  immunity:  '#5A8C3D',
+  longevity: '#7B5EA7',
 };
 
 export default function BurgerPreview() {

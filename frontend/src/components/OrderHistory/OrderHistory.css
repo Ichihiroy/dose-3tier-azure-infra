@@ -155,11 +155,11 @@
 .oh-filter-submit {
   background: var(--accent-cyan);
   border: none;
-  color: #08080F;
+  color: #F7F4EF;
   font-weight: 700;
 }
 
-.oh-filter-submit:hover { background: #00c8b2; }
+.oh-filter-submit:hover { background: var(--accent-hover); }
 
 .oh-filter-clear {
   background: transparent;
@@ -192,7 +192,7 @@
 }
 
 .oh-card:hover {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(45, 90, 61, 0.2);
 }
 
 .oh-card-top {

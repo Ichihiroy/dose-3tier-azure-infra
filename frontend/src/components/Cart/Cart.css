@@ -139,16 +139,16 @@
   font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #08080F;
+  color: #F7F4EF;
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition);
 }
 
 .cart-checkout-btn:hover {
-  background: #00c8b2;
+  background: var(--accent-hover);
   transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(0, 229, 204, 0.25);
+  box-shadow: 0 8px 24px rgba(45, 90, 61, 0.2);
 }
 
 .cart-checkout-arrow {
@@ -220,14 +220,14 @@
   font-size: 11px;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: #08080F;
+  color: #F7F4EF;
   font-weight: 700;
   cursor: pointer;
   transition: all var(--transition);
 }
 
 .cart-empty-btn:hover {
-  background: #00c8b2;
+  background: var(--accent-hover);
   transform: translateY(-1px);
 }
 

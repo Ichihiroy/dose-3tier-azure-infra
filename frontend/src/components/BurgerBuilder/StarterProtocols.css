@@ -34,7 +34,7 @@
 
 .starter-btn:hover {
   border-color: var(--accent-cyan);
-  background: rgba(0, 229, 204, 0.04);
+  background: rgba(45, 90, 61, 0.04);
 }
 
 .starter-btn-label {
