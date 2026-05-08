@@ -2,6 +2,8 @@
 
 Full-stack supplement subscription app deployed on Azure 3-tier infrastructure. React/TypeScript frontend + Spring Boot backend + Azure IaC (Terraform) + Ansible configuration management + GitHub Actions CI/CD.
 
+*Note* : URL might not be working in the future!
+
 **Live URL:** `https://dose.software`
 
 ---
